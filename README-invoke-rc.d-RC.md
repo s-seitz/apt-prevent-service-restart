@@ -1,5 +1,5 @@
 
-## LSB-conform Returncodes for invocce-rc.d
+## LSB-conform Returncodes for invoke-rc.d
 
 ### 0
 either the init script was run and returned exit status 0 (note
