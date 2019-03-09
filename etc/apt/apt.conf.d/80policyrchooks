@@ -1,0 +1,4 @@
+// Please refer to /etc/default/policy-rc
+DPKG::Pre-Invoke {"/usr/sbin/policy-rc.d-report clean || true"; };
+DPKG::Post-Invoke {"/usr/sbin/policy-rc.d-report || true"; };
+

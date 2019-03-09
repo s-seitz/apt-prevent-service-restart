@@ -1,0 +1,18 @@
+#!/bin/bash -e
+# Hook File
+# usage (pre) : $0 clean (removes previous messages)
+# usage (post): $0 (reports previous messages) 
+
+test -f /etc/default/policy-rc && . /etc/default/policy-rc
+DISABLE_RESTART_DURING_UPDATE=${DISABLE_RESTART_DURING_UPDATE:-0}
+POLICY_RC_TMPFILE=${POLICY_RC_TMPFILE:-/tmp/policy-rc.tmp}
+
+CLEAN=$1
+if [ "_${CLEAN}" == "_clean" ]
+then
+	test -f ${POLICY_RC_TMPFILE} && rm -f ${POLICY_RC_TMPFILE}
+else
+	test -f ${POLICY_RC_TMPFILE} && cat ${POLICY_RC_TMPFILE}
+fi
+exit 0
+

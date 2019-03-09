@@ -1,0 +1,26 @@
+#
+# /etc/default/policy-rc
+# # configuration file for the following scripts
+#
+# /usr/sbin/policy-rc.d
+# # hook file which returns RC 101 to prevent service restart during apt/dpkg actions
+# # - hooked automatically if present
+#
+# /usr/sbin/policy-rc.d-report
+# # shell script that outputs all services that have been prevented from restart
+# # - needs to be added to /etc/apt/apt.conf.d/80policyrchooks like
+# #   DPKG::Pre-Invoke {"/usr/sbin/policy-rc.d-report clean || true"; };
+# #   DPKG::Post-Invoke {"/usr/sbin/policy-rc.d-report || true"; };
+#
+
+
+# DISABLE_RESTART_DURING_UPDATE=0
+# # 0 (default) - no changes, restarts services as usual
+# # 1 - disables automatic restart during update and report a list of services
+#   which have been prevented from restarting. also log into syslog.
+DISABLE_RESTART_DURING_UPDATE=0
+
+# POLICY_RC_TMPFILE=/tmp/policy-rc.tmp
+# # Full path to the tmpfile (contains the list of services)
+POLICY_RC_TMPFILE=/tmp/policy-rc.tmp
+
