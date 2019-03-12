@@ -1,18 +1,39 @@
 #!/bin/bash -e
-# Hook File
-# usage (pre) : $0 clean (removes previous messages)
-# usage (post): $0 (reports previous messages) 
+#
+# /usr/sbin/policy-rc.d-report
+#
+# This script should be hooked via
+# DPKG::Pre-Invoke {"/usr/sbin/policy-rc.d-report clean || true"; };
+# DPKG::Post-Invoke {"/usr/sbin/policy-rc.d-report || true"; };
+#
+# Purpose is to report all services that have been prevented from
+# stop/start/restart via apt/dpkg runs.
+#
 
-test -f /etc/default/policy-rc && . /etc/default/policy-rc
+# shellcheck source=/dev/null
+test -f "/etc/default/policy-rc" && source "/etc/default/policy-rc"
+
+# Disabled by default.
 DISABLE_RESTART_DURING_UPDATE=${DISABLE_RESTART_DURING_UPDATE:-0}
-POLICY_RC_TMPFILE=${POLICY_RC_TMPFILE:-/tmp/policy-rc.tmp}
+POLICY_RC_TMPFILE="${POLICY_RC_TMPFILE:-/tmp/policy-rc.tmp}"
+SYSLOG_PRIORITY="${SYSLOG_PRIORITY:-local0.info}"
 
 CLEAN=$1
 if [ "_${CLEAN}" == "_clean" ]
 then
-	test -f ${POLICY_RC_TMPFILE} && rm -f ${POLICY_RC_TMPFILE}
+	test -f "${POLICY_RC_TMPFILE}" && rm -f "${POLICY_RC_TMPFILE}"
 else
-	test -f ${POLICY_RC_TMPFILE} && cat ${POLICY_RC_TMPFILE}
+	if [ -f "${POLICY_RC_TMPFILE}" ]
+  then
+    # logger did already run via policy-rc.d, but for better visibility, do it again :)
+    if [ $(($(stat --format="%s" "${POLICY_RC_TMPFILE}" 2> /dev/null))) -gt 0 ]
+    then
+      cat "${POLICY_RC_TMPFILE}"
+      logger --priority "${SYSLOG_PRIORITY}" "=============================================="
+      logger --priority "${SYSLOG_PRIORITY}" < "${POLICY_RC_TMPFILE}"
+      logger --priority "${SYSLOG_PRIORITY}" "=============================================="
+    fi
+  fi
 fi
 exit 0
 
